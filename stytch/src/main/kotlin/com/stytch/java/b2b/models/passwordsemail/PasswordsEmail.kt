@@ -12,6 +12,7 @@ import com.stytch.java.b2b.models.mfa.MfaRequired
 import com.stytch.java.b2b.models.organizations.Member
 import com.stytch.java.b2b.models.organizations.Organization
 import com.stytch.java.b2b.models.sessions.MemberSession
+import com.stytch.java.common.methodoptions.Authorization
 
 @JsonClass(generateAdapter = false)
 public enum class ResetRequestLocale {
@@ -37,28 +38,77 @@ public enum class ResetStartRequestLocale {
     PTBR,
 }
 
-@JsonClass(generateAdapter = true)
-public data class DeleteRequest
+public data class RequireResetRequestOptions
     @JvmOverloads
     constructor(
+        /**
+         * Optional authorization object.
+         * Pass in an active Stytch Member session token or session JWT and the request
+         * will be run using that member's permissions.
+         */
+        val authorization: Authorization? = null,
+    ) {
+        internal fun addHeaders(headers: Map<String, String> = emptyMap()): Map<String, String> {
+            var res = mapOf<String, String>()
+            if (authorization != null) {
+                res = authorization.addHeaders(res)
+            }
+            return res + headers
+        }
+    }
+
+/**
+* Request type for `Email.requireReset`.
+*/
+@JsonClass(generateAdapter = true)
+public data class RequireResetRequest
+    @JvmOverloads
+    constructor(
+        /**
+         * The email address of the Member to start the email reset process for.
+         */
         @Json(name = "email_address")
         val emailAddress: String,
+        /**
+         * Globally unique UUID that identifies a specific Organization. The `organization_id` is critical to perform operations
+         * on an Organization, so be sure to preserve this value.
+         */
         @Json(name = "organization_id")
         val organizationId: String? = null,
+        /**
+         * Globally unique UUID that identifies a specific Member. The `member_id` is critical to perform operations on a Member,
+         * so be sure to preserve this value.
+         */
         @Json(name = "member_id")
         val memberId: String? = null,
     )
 
+/**
+* Response type for `Email.requireReset`.
+*/
 @JsonClass(generateAdapter = true)
-public data class DeleteResponse
+public data class RequireResetResponse
     @JvmOverloads
     constructor(
+        /**
+         * The [Member object](https://stytch.com/docs/b2b/api/member-object)
+         */
         @Json(name = "member")
         val member: Member,
+        /**
+         * The [Organization object](https://stytch.com/docs/b2b/api/organization-object).
+         */
         @Json(name = "organization")
         val organization: Organization,
+        /**
+         * The HTTP status code of the response. Stytch follows standard HTTP response status code patterns, e.g. 2XX values
+         * equate to success, 3XX values are redirects, 4XX are client errors, and 5XX are server errors.
+         */
         @Json(name = "status_code")
         val statusCode: Int,
+        /**
+         * Globally unique UUID that identifies a specific Member.
+         */
         @Json(name = "member_id")
         val memberId: String? = null,
     )

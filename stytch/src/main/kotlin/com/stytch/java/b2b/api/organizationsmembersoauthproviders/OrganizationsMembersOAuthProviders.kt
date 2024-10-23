@@ -9,9 +9,13 @@ package com.stytch.java.b2b.api.organizationsmembersoauthproviders
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.stytch.java.b2b.models.organizationsmembersoauthproviders.GithubResponse
 import com.stytch.java.b2b.models.organizationsmembersoauthproviders.GoogleResponse
+import com.stytch.java.b2b.models.organizationsmembersoauthproviders.HubspotResponse
 import com.stytch.java.b2b.models.organizationsmembersoauthproviders.MicrosoftResponse
 import com.stytch.java.b2b.models.organizationsmembersoauthproviders.ProviderInformationRequest
+import com.stytch.java.b2b.models.organizationsmembersoauthproviders.SlackRequest
+import com.stytch.java.b2b.models.organizationsmembersoauthproviders.SlackResponse
 import com.stytch.java.common.InstantAdapter
 import com.stytch.java.common.StytchResult
 import com.stytch.java.http.HttpClient
@@ -98,6 +102,63 @@ public interface OAuthProviders {
      * access token automatically.
      */
     public fun microsoftCompletable(data: ProviderInformationRequest): CompletableFuture<StytchResult<MicrosoftResponse>>
+
+    /**
+     * Retrieve the saved Slack access token and ID token for a member. After a successful OAuth login, Stytch will save the
+     * issued access token and ID token from the identity provider.
+     */
+    public suspend fun slack(data: SlackRequest): StytchResult<SlackResponse>
+
+    /**
+     * Retrieve the saved Slack access token and ID token for a member. After a successful OAuth login, Stytch will save the
+     * issued access token and ID token from the identity provider.
+     */
+    public fun slack(
+        data: SlackRequest,
+        callback: (StytchResult<SlackResponse>) -> Unit,
+    )
+
+    /**
+     * Retrieve the saved Slack access token and ID token for a member. After a successful OAuth login, Stytch will save the
+     * issued access token and ID token from the identity provider.
+     */
+    public fun slackCompletable(data: SlackRequest): CompletableFuture<StytchResult<SlackResponse>>
+
+    /**
+     * Retrieve the saved Hubspot access token and ID token for a member. After a successful OAuth login, Stytch will save the
+     * issued access token and ID token from the identity provider. If a refresh token has been issued, Stytch will refresh
+     * the
+     * access token automatically.
+     */
+    public suspend fun hubspot(data: ProviderInformationRequest): StytchResult<HubspotResponse>
+
+    /**
+     * Retrieve the saved Hubspot access token and ID token for a member. After a successful OAuth login, Stytch will save the
+     * issued access token and ID token from the identity provider. If a refresh token has been issued, Stytch will refresh
+     * the
+     * access token automatically.
+     */
+    public fun hubspot(
+        data: ProviderInformationRequest,
+        callback: (StytchResult<HubspotResponse>) -> Unit,
+    )
+
+    /**
+     * Retrieve the saved Hubspot access token and ID token for a member. After a successful OAuth login, Stytch will save the
+     * issued access token and ID token from the identity provider. If a refresh token has been issued, Stytch will refresh
+     * the
+     * access token automatically.
+     */
+    public fun hubspotCompletable(data: ProviderInformationRequest): CompletableFuture<StytchResult<HubspotResponse>>
+
+    public suspend fun github(data: ProviderInformationRequest): StytchResult<GithubResponse>
+
+    public fun github(
+        data: ProviderInformationRequest,
+        callback: (StytchResult<GithubResponse>) -> Unit,
+    )
+
+    public fun githubCompletable(data: ProviderInformationRequest): CompletableFuture<StytchResult<GithubResponse>>
 }
 
 internal class OAuthProvidersImpl(
@@ -158,5 +219,80 @@ internal class OAuthProvidersImpl(
     override fun microsoftCompletable(data: ProviderInformationRequest): CompletableFuture<StytchResult<MicrosoftResponse>> =
         coroutineScope.async {
             microsoft(data)
+        }.asCompletableFuture()
+
+    override suspend fun slack(data: SlackRequest): StytchResult<SlackResponse> =
+        withContext(Dispatchers.IO) {
+            var headers = emptyMap<String, String>()
+
+            val asJson = moshi.adapter(SlackRequest::class.java).toJson(data)
+            val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
+            val adapter: JsonAdapter<Map<String, Any>> = moshi.adapter(type)
+            val asMap = adapter.fromJson(asJson) ?: emptyMap()
+            httpClient.get("/v1/b2b/organizations/${data.organizationId}/members/${data.memberId}/oauth_providers/slack", asMap, headers)
+        }
+
+    override fun slack(
+        data: SlackRequest,
+        callback: (StytchResult<SlackResponse>) -> Unit,
+    ) {
+        coroutineScope.launch {
+            callback(slack(data))
+        }
+    }
+
+    override fun slackCompletable(data: SlackRequest): CompletableFuture<StytchResult<SlackResponse>> =
+        coroutineScope.async {
+            slack(data)
+        }.asCompletableFuture()
+
+    override suspend fun hubspot(data: ProviderInformationRequest): StytchResult<HubspotResponse> =
+        withContext(Dispatchers.IO) {
+            var headers = emptyMap<String, String>()
+
+            val asJson = moshi.adapter(ProviderInformationRequest::class.java).toJson(data)
+            val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
+            val adapter: JsonAdapter<Map<String, Any>> = moshi.adapter(type)
+            val asMap = adapter.fromJson(asJson) ?: emptyMap()
+            httpClient.get("/v1/b2b/organizations/${data.organizationId}/members/${data.memberId}/oauth_providers/hubspot", asMap, headers)
+        }
+
+    override fun hubspot(
+        data: ProviderInformationRequest,
+        callback: (StytchResult<HubspotResponse>) -> Unit,
+    ) {
+        coroutineScope.launch {
+            callback(hubspot(data))
+        }
+    }
+
+    override fun hubspotCompletable(data: ProviderInformationRequest): CompletableFuture<StytchResult<HubspotResponse>> =
+        coroutineScope.async {
+            hubspot(data)
+        }.asCompletableFuture()
+
+    override suspend fun github(data: ProviderInformationRequest): StytchResult<GithubResponse> =
+        withContext(Dispatchers.IO) {
+            var headers = emptyMap<String, String>()
+
+            val asJson = moshi.adapter(ProviderInformationRequest::class.java).toJson(data)
+            val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
+            val adapter: JsonAdapter<Map<String, Any>> = moshi.adapter(type)
+            val asMap = adapter.fromJson(asJson) ?: emptyMap()
+            httpClient.get("/v1/b2b/organizations/${data.organizationId}/members/${data.memberId}/oauth_providers/github", asMap, headers)
+        }
+
+    override fun github(
+        data: ProviderInformationRequest,
+        callback: (StytchResult<GithubResponse>) -> Unit,
+    ) {
+        coroutineScope.launch {
+            callback(github(data))
+        }
+    }
+
+    override fun githubCompletable(data: ProviderInformationRequest): CompletableFuture<StytchResult<GithubResponse>> =
+        coroutineScope.async {
+            github(data)
         }.asCompletableFuture()
 }

@@ -313,13 +313,31 @@ public interface Members {
      */
     public fun dangerouslyGetCompletable(data: DangerouslyGetRequest): CompletableFuture<StytchResult<GetResponse>>
 
+    /**
+     * Retrieve the saved OIDC access tokens and ID tokens for a member. After a successful OIDC login, Stytch will save the
+     * issued access token and ID token from the identity provider. If a refresh token has been issued, Stytch will refresh
+     * the
+     * access token automatically.
+     */
     public suspend fun oidcProviders(data: OIDCProviderInformationRequest): StytchResult<OIDCProvidersResponse>
 
+    /**
+     * Retrieve the saved OIDC access tokens and ID tokens for a member. After a successful OIDC login, Stytch will save the
+     * issued access token and ID token from the identity provider. If a refresh token has been issued, Stytch will refresh
+     * the
+     * access token automatically.
+     */
     public fun oidcProviders(
         data: OIDCProviderInformationRequest,
         callback: (StytchResult<OIDCProvidersResponse>) -> Unit,
     )
 
+    /**
+     * Retrieve the saved OIDC access tokens and ID tokens for a member. After a successful OIDC login, Stytch will save the
+     * issued access token and ID token from the identity provider. If a refresh token has been issued, Stytch will refresh
+     * the
+     * access token automatically.
+     */
     public fun oidcProvidersCompletable(data: OIDCProviderInformationRequest): CompletableFuture<StytchResult<OIDCProvidersResponse>>
 
     /**

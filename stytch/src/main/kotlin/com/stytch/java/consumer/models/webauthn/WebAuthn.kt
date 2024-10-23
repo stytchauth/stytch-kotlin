@@ -315,6 +315,12 @@ public data class RegisterStartRequest
          */
         @Json(name = "return_passkey_credential_options")
         val returnPasskeyCredentialOptions: Boolean? = null,
+        @Json(name = "override_id")
+        val overrideId: String? = null,
+        @Json(name = "override_name")
+        val overrideName: String? = null,
+        @Json(name = "override_display_name")
+        val overrideDisplayName: String? = null,
     )
 
 /**

@@ -7,6 +7,8 @@ package com.stytch.java.b2b.api.passwords
 // !!!
 
 import com.squareup.moshi.Moshi
+import com.stytch.java.b2b.api.passwordsdiscovery.Discovery
+import com.stytch.java.b2b.api.passwordsdiscovery.DiscoveryImpl
 import com.stytch.java.b2b.api.passwordsemail.Email
 import com.stytch.java.b2b.api.passwordsemail.EmailImpl
 import com.stytch.java.b2b.api.passwordsexistingpassword.ExistingPassword
@@ -36,6 +38,8 @@ public interface Passwords {
     public val sessions: Sessions
 
     public val existingPassword: ExistingPassword
+
+    public val discovery: Discovery
 
     /**
      * This API allows you to check whether the user’s provided password is valid, and to provide feedback to the user on how
@@ -221,6 +225,7 @@ internal class PasswordsImpl(
     override val email: Email = EmailImpl(httpClient, coroutineScope)
     override val sessions: Sessions = SessionsImpl(httpClient, coroutineScope)
     override val existingPassword: ExistingPassword = ExistingPasswordImpl(httpClient, coroutineScope)
+    override val discovery: Discovery = DiscoveryImpl(httpClient, coroutineScope)
 
     override suspend fun strengthCheck(data: StrengthCheckRequest): StytchResult<StrengthCheckResponse> =
         withContext(Dispatchers.IO) {

@@ -593,26 +593,55 @@ public data class GetResponse
         val statusCode: Int,
     )
 
+/**
+* Request type for `Members.oidcProviders`.
+*/
 @JsonClass(generateAdapter = true)
 public data class OIDCProviderInformationRequest
     @JvmOverloads
     constructor(
+        /**
+         * Globally unique UUID that identifies a specific Organization. The `organization_id` is critical to perform operations
+         * on an Organization, so be sure to preserve this value.
+         */
         @Json(name = "organization_id")
         val organizationId: String,
+        /**
+         * Globally unique UUID that identifies a specific Member. The `member_id` is critical to perform operations on a Member,
+         * so be sure to preserve this value.
+         */
         @Json(name = "member_id")
         val memberId: String,
+        /**
+         * Whether to return the refresh token Stytch has stored for the OAuth Provider. Defaults to false. **Important:** If your
+         * application exchanges the refresh token, Stytch may not be able to automatically refresh access tokens in the future.
+         */
         @Json(name = "include_refresh_token")
         val includeRefreshToken: Boolean? = null,
     )
 
+/**
+* Response type for `Members.oidcProviders`.
+*/
 @JsonClass(generateAdapter = true)
 public data class OIDCProvidersResponse
     @JvmOverloads
     constructor(
+        /**
+         * Globally unique UUID that is returned with every API call. This value is important to log for debugging purposes; we
+         * may ask for this value to help identify a specific API call when helping you debug an issue.
+         */
         @Json(name = "request_id")
         val requestId: String,
+        /**
+         * A list of tokens the member is registered with.
+         */
         @Json(name = "registrations")
         val registrations: List<OIDCProviderInfo>,
+        /**
+         * The HTTP status code of the response. Stytch follows standard HTTP response status code patterns, e.g. 2XX values
+         * equate to success, 3XX values are redirects, 4XX are client errors, and 5XX are server errors.
+         */
         @Json(name = "status_code")
         val statusCode: Int,
     )

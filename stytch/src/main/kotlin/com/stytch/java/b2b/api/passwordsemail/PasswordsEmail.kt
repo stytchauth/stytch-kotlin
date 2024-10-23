@@ -7,8 +7,9 @@ package com.stytch.java.b2b.api.passwordsemail
 // !!!
 
 import com.squareup.moshi.Moshi
-import com.stytch.java.b2b.models.passwordsemail.DeleteRequest
-import com.stytch.java.b2b.models.passwordsemail.DeleteResponse
+import com.stytch.java.b2b.models.passwordsemail.RequireResetRequest
+import com.stytch.java.b2b.models.passwordsemail.RequireResetRequestOptions
+import com.stytch.java.b2b.models.passwordsemail.RequireResetResponse
 import com.stytch.java.b2b.models.passwordsemail.ResetRequest
 import com.stytch.java.b2b.models.passwordsemail.ResetResponse
 import com.stytch.java.b2b.models.passwordsemail.ResetStartRequest
@@ -139,14 +140,33 @@ public interface Email {
      */
     public fun resetCompletable(data: ResetRequest): CompletableFuture<StytchResult<ResetResponse>>
 
-    public suspend fun delete(data: DeleteRequest): StytchResult<DeleteResponse>
+    /**
+     * Require a password be reset by the associated email address. This endpoint is only functional for cross-org password
+     * use cases.
+     */
+    public suspend fun requireReset(
+        data: RequireResetRequest,
+        methodOptions: RequireResetRequestOptions? = null,
+    ): StytchResult<RequireResetResponse>
 
-    public fun delete(
-        data: DeleteRequest,
-        callback: (StytchResult<DeleteResponse>) -> Unit,
+    /**
+     * Require a password be reset by the associated email address. This endpoint is only functional for cross-org password
+     * use cases.
+     */
+    public fun requireReset(
+        data: RequireResetRequest,
+        methodOptions: RequireResetRequestOptions? = null,
+        callback: (StytchResult<RequireResetResponse>) -> Unit,
     )
 
-    public fun deleteCompletable(data: DeleteRequest): CompletableFuture<StytchResult<DeleteResponse>>
+    /**
+     * Require a password be reset by the associated email address. This endpoint is only functional for cross-org password
+     * use cases.
+     */
+    public fun requireResetCompletable(
+        data: RequireResetRequest,
+        methodOptions: RequireResetRequestOptions? = null,
+    ): CompletableFuture<StytchResult<RequireResetResponse>>
 }
 
 internal class EmailImpl(
@@ -199,25 +219,35 @@ internal class EmailImpl(
             reset(data)
         }.asCompletableFuture()
 
-    override suspend fun delete(data: DeleteRequest): StytchResult<DeleteResponse> =
+    override suspend fun requireReset(
+        data: RequireResetRequest,
+        methodOptions: RequireResetRequestOptions?,
+    ): StytchResult<RequireResetResponse> =
         withContext(Dispatchers.IO) {
             var headers = emptyMap<String, String>()
+            methodOptions?.let {
+                headers = methodOptions.addHeaders(headers)
+            }
 
-            val asJson = moshi.adapter(DeleteRequest::class.java).toJson(data)
-            httpClient.post("/v1/b2b/passwords/email/delete", asJson, headers)
+            val asJson = moshi.adapter(RequireResetRequest::class.java).toJson(data)
+            httpClient.post("/v1/b2b/passwords/email/require_reset", asJson, headers)
         }
 
-    override fun delete(
-        data: DeleteRequest,
-        callback: (StytchResult<DeleteResponse>) -> Unit,
+    override fun requireReset(
+        data: RequireResetRequest,
+        methodOptions: RequireResetRequestOptions?,
+        callback: (StytchResult<RequireResetResponse>) -> Unit,
     ) {
         coroutineScope.launch {
-            callback(delete(data))
+            callback(requireReset(data, methodOptions))
         }
     }
 
-    override fun deleteCompletable(data: DeleteRequest): CompletableFuture<StytchResult<DeleteResponse>> =
+    override fun requireResetCompletable(
+        data: RequireResetRequest,
+        methodOptions: RequireResetRequestOptions?,
+    ): CompletableFuture<StytchResult<RequireResetResponse>> =
         coroutineScope.async {
-            delete(data)
+            requireReset(data, methodOptions)
         }.asCompletableFuture()
 }

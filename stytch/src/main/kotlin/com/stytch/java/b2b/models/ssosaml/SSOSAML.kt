@@ -332,7 +332,7 @@ public data class UpdateConnectionRequest
          *  that grant specific role assignments. For each group-Role pair, if a Member logs in with this SAML connection and
          *  belongs to the specified SAML group, they will be granted the associated Role. See the
          *  [RBAC guide](https://stytch.com/docs/b2b/guides/rbac/role-assignment) for more information about role assignment.
-         *          Before adding any group implicit role assignments, you must add a "groups" key to your SAML connection's
+         * Before adding any group implicit role assignments, you must add a "groups" key to your SAML connection's
          *          `attribute_mapping`. Make sure that your IdP is configured to correctly send the group information.
          */
         @Json(name = "saml_group_implicit_role_assignments")

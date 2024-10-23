@@ -8,6 +8,23 @@ package com.stytch.java.b2b.models.organizationsmembersoauthproviders
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import com.stytch.java.b2b.models.organizations.GithubProviderInfo
+import com.stytch.java.b2b.models.organizations.HubspOTPRoviderInfo
+import com.stytch.java.b2b.models.organizations.SlackProviderInfo
+
+@JsonClass(generateAdapter = true)
+public data class GithubResponse
+    @JvmOverloads
+    constructor(
+        @Json(name = "request_id")
+        val requestId: String,
+        @Json(name = "provider_type")
+        val providerType: String,
+        @Json(name = "registrations")
+        val registrations: List<GithubProviderInfo>,
+        @Json(name = "status_code")
+        val statusCode: Int,
+    )
 
 /**
 * Response type for `OAuthProviders.google`.
@@ -67,6 +84,37 @@ public data class GoogleResponse
          */
         @Json(name = "refresh_token")
         val refreshToken: String? = null,
+    )
+
+/**
+* Response type for `OAuthProviders.hubspot`.
+*/
+@JsonClass(generateAdapter = true)
+public data class HubspotResponse
+    @JvmOverloads
+    constructor(
+        /**
+         * Globally unique UUID that is returned with every API call. This value is important to log for debugging purposes; we
+         * may ask for this value to help identify a specific API call when helping you debug an issue.
+         */
+        @Json(name = "request_id")
+        val requestId: String,
+        /**
+         * Denotes the OAuth identity provider that the user has authenticated with, e.g. Google, Microsoft, GitHub etc.
+         */
+        @Json(name = "provider_type")
+        val providerType: String,
+        /**
+         * A list of tokens the member is registered with.
+         */
+        @Json(name = "registrations")
+        val registrations: List<HubspOTPRoviderInfo>,
+        /**
+         * The HTTP status code of the response. Stytch follows standard HTTP response status code patterns, e.g. 2XX values
+         * equate to success, 3XX values are redirects, 4XX are client errors, and 5XX are server errors.
+         */
+        @Json(name = "status_code")
+        val statusCode: Int,
     )
 
 /**
@@ -130,7 +178,7 @@ public data class MicrosoftResponse
     )
 
 /**
-* Request type for `OAuthProviders.google`, `OAuthProviders.microsoft`.
+* Request type for `OAuthProviders.google`, `OAuthProviders.hubspot`, `OAuthProviders.microsoft`.
 */
 @JsonClass(generateAdapter = true)
 public data class ProviderInformationRequest
@@ -154,4 +202,56 @@ public data class ProviderInformationRequest
          */
         @Json(name = "include_refresh_token")
         val includeRefreshToken: Boolean? = null,
+    )
+
+/**
+* Request type for `OAuthProviders.slack`.
+*/
+@JsonClass(generateAdapter = true)
+public data class SlackRequest
+    @JvmOverloads
+    constructor(
+        /**
+         * Globally unique UUID that identifies a specific Organization. The `organization_id` is critical to perform operations
+         * on an Organization, so be sure to preserve this value.
+         */
+        @Json(name = "organization_id")
+        val organizationId: String,
+        /**
+         * Globally unique UUID that identifies a specific Member. The `member_id` is critical to perform operations on a Member,
+         * so be sure to preserve this value.
+         */
+        @Json(name = "member_id")
+        val memberId: String,
+    )
+
+/**
+* Response type for `OAuthProviders.slack`.
+*/
+@JsonClass(generateAdapter = true)
+public data class SlackResponse
+    @JvmOverloads
+    constructor(
+        /**
+         * Globally unique UUID that is returned with every API call. This value is important to log for debugging purposes; we
+         * may ask for this value to help identify a specific API call when helping you debug an issue.
+         */
+        @Json(name = "request_id")
+        val requestId: String,
+        /**
+         * Denotes the OAuth identity provider that the user has authenticated with, e.g. Google, Microsoft, GitHub etc.
+         */
+        @Json(name = "provider_type")
+        val providerType: String,
+        /**
+         * A list of tokens the member is registered with.
+         */
+        @Json(name = "registrations")
+        val registrations: List<SlackProviderInfo>,
+        /**
+         * The HTTP status code of the response. Stytch follows standard HTTP response status code patterns, e.g. 2XX values
+         * equate to success, 3XX values are redirects, 4XX are client errors, and 5XX are server errors.
+         */
+        @Json(name = "status_code")
+        val statusCode: Int,
     )
